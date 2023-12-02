@@ -10,7 +10,7 @@ DIGITS = {
 }
 
 
-def find_digits(line: str, digits: list[str]) -> int:
+def find_number(line: str, digits: list[str]) -> int:
     nums = []
     for d in digits:
         nums += [(m.start(0), DIGITS.get(d, d)) for m in re.finditer(d, line)]
@@ -22,23 +22,23 @@ def find_digits(line: str, digits: list[str]) -> int:
 
 
 def solution(input: str, digits: list[str]) -> int:
-    return sum(map(lambda line: find_digits(line, digits), input.splitlines()))
+    return sum(map(lambda line: find_number(line, digits), input.splitlines()))
 
 
 def part1(input: str) -> int:
-    return solution(input, list(DIGITS.values()))
+    return solution(input, [*DIGITS.values()])
 
 
 def part2(input: str) -> int:
-    return solution(input, list(DIGITS) + list(DIGITS.values()))
+    return solution(input, [*DIGITS.keys(), *DIGITS.values()])
 
 
 def main() -> None:
     with open("input.txt") as file:
         input = file.read()
 
-    print(part1(input))
-    print(part2(input))
+    print("Part 1:", part1(input))
+    print("Part 2:", part2(input))
 
 
 if __name__ == "__main__":

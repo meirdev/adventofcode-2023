@@ -20,3 +20,11 @@ zoneight234
 7pqrstsixteen"""
 
     assert part2(input) == 281
+
+
+def test_input():
+    with open("input.txt") as file:
+        input = file.read()
+
+    assert part1(input) == 54159
+    assert part2(input) == 53866
