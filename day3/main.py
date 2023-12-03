@@ -20,7 +20,9 @@ def get_value(number: Number) -> int:
     return number.value
 
 
-def get_numbers_symbols(input: str, pattern: str) -> Iterator[tuple[Number, Symbol]]:
+def get_numbers_symbols(
+    input: str, pattern: re.Pattern[str]
+) -> Iterator[tuple[Number, Symbol]]:
     lines = input.splitlines()
 
     for y, line in enumerate(lines):
@@ -30,12 +32,12 @@ def get_numbers_symbols(input: str, pattern: str) -> Iterator[tuple[Number, Symb
 
             for y_ in range(max(0, y - 1), min(len(lines), y + 2)):
                 for x_ in range(max(0, start - 1), min(len(line), end + 1)):
-                    if re.fullmatch(pattern, lines[y_][x_]):
+                    if pattern.fullmatch(lines[y_][x_]):
                         yield Number(y, start, end, value), Symbol(y_, x_)
 
 
 def part1(input: str) -> int:
-    numbers_symbols = get_numbers_symbols(input, r"[^\d\.]+")
+    numbers_symbols = get_numbers_symbols(input, re.compile(r"[^\d.]+"))
 
     return sum(map(get_value, set(n for n, _ in numbers_symbols)))
 
@@ -43,7 +45,7 @@ def part1(input: str) -> int:
 def part2(input: str) -> int:
     symbols_numbers: DefaultDict[Symbol, list[Number]] = defaultdict(list)
 
-    for number, symbol in get_numbers_symbols(input, r"\*"):
+    for number, symbol in get_numbers_symbols(input, re.compile(r"\*")):
         symbols_numbers[symbol].append(number)
 
     return sum(
