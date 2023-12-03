@@ -1,28 +1,18 @@
 import math
 import re
 from collections import defaultdict
-from typing import DefaultDict, Iterator, NamedTuple
+from typing import DefaultDict, NamedTuple
 
 
-class Number(NamedTuple):
-    y: int
-    start: int
-    end: int
-    value: int
-
-
-class Symbol(NamedTuple):
+class Node(NamedTuple):
     y: int
     x: int
+    value: int | str
 
 
-def get_value(number: Number) -> int:
-    return number.value
+def get_graph(input: str, pattern: re.Pattern[str]) -> DefaultDict[Node, list[Node]]:
+    graph: DefaultDict[Node, list[Node]] = defaultdict(list)
 
-
-def get_numbers_symbols(
-    input: str, pattern: re.Pattern[str]
-) -> Iterator[tuple[Number, Symbol]]:
     lines = input.splitlines()
 
     for y, line in enumerate(lines):
@@ -30,26 +20,32 @@ def get_numbers_symbols(
             start, end = match.span()
             value = int(match.group(0))
 
+            number = Node(y, start, value)
+
             for y_ in range(max(0, y - 1), min(len(lines), y + 2)):
                 for x_ in range(max(0, start - 1), min(len(line), end + 1)):
                     if pattern.fullmatch(lines[y_][x_]):
-                        yield Number(y, start, end, value), Symbol(y_, x_)
+                        symbol = Node(y_, x_, lines[y_][x_])
+
+                        graph[number].append(symbol)
+                        graph[symbol].append(number)
+
+    return graph
 
 
 def part1(input: str) -> int:
-    numbers_symbols = get_numbers_symbols(input, re.compile(r"[^\d.]+"))
+    graph = get_graph(input, re.compile(r"[^\d.]+"))
 
-    return sum(map(get_value, set(n for n, _ in numbers_symbols)))
+    return sum(i.value for i in graph if isinstance(i.value, int))
 
 
 def part2(input: str) -> int:
-    symbols_numbers: DefaultDict[Symbol, list[Number]] = defaultdict(list)
-
-    for number, symbol in get_numbers_symbols(input, re.compile(r"\*")):
-        symbols_numbers[symbol].append(number)
+    graph = get_graph(input, re.compile(r"\*"))
 
     return sum(
-        math.prod(map(get_value, n)) for n in symbols_numbers.values() if len(n) == 2
+        math.prod(int(n.value) for n in graph[i])
+        for i in graph
+        if isinstance(i.value, str) and len(graph[i]) == 2
     )
 
 
