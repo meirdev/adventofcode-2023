@@ -10,7 +10,7 @@ class Node(NamedTuple):
     value: int | str
 
 
-def get_graph(input: str, pattern: re.Pattern[str]) -> DefaultDict[Node, list[Node]]:
+def get_graph(input: str) -> DefaultDict[Node, list[Node]]:
     graph: DefaultDict[Node, list[Node]] = defaultdict(list)
 
     lines = input.splitlines()
@@ -24,7 +24,7 @@ def get_graph(input: str, pattern: re.Pattern[str]) -> DefaultDict[Node, list[No
 
             for y_ in range(max(0, y - 1), min(len(lines), y + 2)):
                 for x_ in range(max(0, start - 1), min(len(line), end + 1)):
-                    if pattern.fullmatch(lines[y_][x_]):
+                    if not lines[y_][x_].isdigit() and lines[y_][x_] != ".":
                         symbol = Node(y_, x_, lines[y_][x_])
 
                         graph[number].append(symbol)
@@ -34,18 +34,18 @@ def get_graph(input: str, pattern: re.Pattern[str]) -> DefaultDict[Node, list[No
 
 
 def part1(input: str) -> int:
-    graph = get_graph(input, re.compile(r"[^\d.]+"))
+    graph = get_graph(input)
 
     return sum(i.value for i in graph if isinstance(i.value, int))
 
 
 def part2(input: str) -> int:
-    graph = get_graph(input, re.compile(r"\*"))
+    graph = get_graph(input)
 
     return sum(
         math.prod(int(n.value) for n in graph[i])
         for i in graph
-        if isinstance(i.value, str) and len(graph[i]) == 2
+        if isinstance(i.value, str) and i.value == "*" and len(graph[i]) == 2
     )
 
 
