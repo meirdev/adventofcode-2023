@@ -36,7 +36,7 @@ def parse_input(input: str) -> list[Card]:
 def part1(input: str) -> int:
     cards = parse_input(input)
 
-    return sum(2 ** (card.wins - 1) if card.wins > 0 else 0 for card in cards)
+    return sum(2 ** (card.wins - 1) for card in cards if card.wins > 0)
 
 
 def part2(input: str) -> int:
