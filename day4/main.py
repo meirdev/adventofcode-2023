@@ -1,6 +1,5 @@
 import re
 import functools
-from collections import deque
 from dataclasses import dataclass
 
 
