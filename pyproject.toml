@@ -13,6 +13,7 @@ python = "^3.12"
 black = "^23.11.0"
 mypy = "^1.7.1"
 pytest = "^7.4.3"
+devtools = "^0.12.2"
 
 [build-system]
 requires = ["poetry-core"]
