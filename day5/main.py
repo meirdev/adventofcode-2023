@@ -76,7 +76,6 @@ def part2(input: str) -> int:
 
     for label in LABELS:
         changed_seeds = RangeSet()
-        unchanged_seeds = seeds
 
         for entry in almanac.maps[label]:
             entry_range = Range(entry.source, entry.source + entry.range)
@@ -87,10 +86,10 @@ def part2(input: str) -> int:
                 range_.end += diff
                 return range_
 
-            changed_seeds += map(shift, unchanged_seeds & entry_range)
-            unchanged_seeds -= entry_range
+            changed_seeds += map(shift, seeds & entry_range)
+            seeds -= entry_range
 
-        seeds = changed_seeds + unchanged_seeds
+        seeds += changed_seeds
 
     return min(i.start for i in seeds)
 
