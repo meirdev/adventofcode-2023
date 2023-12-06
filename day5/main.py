@@ -1,7 +1,8 @@
 import itertools
 import re
-from dataclasses import dataclass
-from typing import NamedTuple, Optional
+from typing import NamedTuple
+
+from ranges import Range, RangeSet
 
 LABELS: list[str] = [
     "seed-to-soil",
@@ -23,36 +24,6 @@ class Map(NamedTuple):
 class Almanac(NamedTuple):
     seeds: list[int]
     maps: dict[str, list[Map]]
-
-
-@dataclass
-class Range:
-    start: int
-    end: int
-
-    def intersection(self, other: "Range") -> Optional["Range"]:
-        if (self.start >= other.start and self.start < other.end) or (
-            self.start <= other.start and self.end > other.start
-        ):
-            return Range(max(self.start, other.start), min(self.end, other.end))
-        
-        return None
-
-    def intersection_remainder(self, other: "Range") -> tuple[Optional["Range"], list["Range"]]:
-        intersection = self.intersection(other)
-        if intersection is None:
-            return None, [self]
-
-        remainders = []
-        if self.start < intersection.start:
-            remainders.append(Range(self.start, intersection.start))
-        if self.end > intersection.end:
-            remainders.append(Range(intersection.end, self.end))
-        return intersection, remainders
-
-    def shift(self, n) -> None:
-        self.start += n
-        self.end += n
 
 
 def parse_input(input: str) -> Almanac:
@@ -98,33 +69,30 @@ def part1(input: str) -> int:
 def part2(input: str) -> int:
     almanac = parse_input(input)
 
-    min_range: list[Range] = [
+    seeds = RangeSet(
         Range(start, start + range_)
         for start, range_ in itertools.batched(almanac.seeds, 2)
-    ]
+    )
 
     for label in LABELS:
-        unchanged_seeds = min_range
-        changed_seeds = []
+        changed_seeds = RangeSet()
+        unchanged_seeds = seeds
 
-        for map_ in almanac.maps[label]:
-            new_unchanged_seeds = []
+        for entry in almanac.maps[label]:
+            entry_range = Range(entry.source, entry.source + entry.range)
+            diff = entry.destination - entry.source
 
-            for seed in unchanged_seeds:
-                map_range = Range(map_.source, map_.source + map_.range)
+            def shift(range_: "Range") -> "Range":
+                range_.start += diff
+                range_.end += diff
+                return range_
 
-                intersection, remainders = seed.intersection_remainder(map_range)
-                if intersection:
-                    intersection.shift(map_.destination - map_.source)
-                    changed_seeds.append(intersection)
+            changed_seeds += map(shift, unchanged_seeds & entry_range)
+            unchanged_seeds -= entry_range
 
-                new_unchanged_seeds += remainders
+        seeds = changed_seeds + unchanged_seeds
 
-            unchanged_seeds = new_unchanged_seeds
-
-        min_range = unchanged_seeds + changed_seeds
-
-    return min(min_range, key=lambda a: a.start).start
+    return min(i.start for i in seeds)
 
 
 def main() -> None:
