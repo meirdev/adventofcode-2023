@@ -75,7 +75,7 @@ def part2(input: str) -> int:
     )
 
     for label in LABELS:
-        changed_seeds = RangeSet()
+        changed_seeds: list[Range] = []
 
         for entry in almanac.maps[label]:
             entry_range = Range(entry.source, entry.source + entry.range)
