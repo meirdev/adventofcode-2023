@@ -269,6 +269,17 @@ pluggy = ">=0.12,<2.0"
 testing = ["argcomplete", "attrs (>=19.2.0)", "hypothesis (>=3.56)", "mock", "nose", "pygments (>=2.7.2)", "requests", "setuptools", "xmlschema"]
 
 [[package]]
+name = "python-ranges"
+version = "1.2.2"
+description = "Continuous Range, RangeSet, and RangeDict data structures"
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "python-ranges-1.2.2.tar.gz", hash = "sha256:799618046603954a78ab4611d21080d387b3e9c50c181789e3903d6209a26b98"},
+    {file = "python_ranges-1.2.2-py3-none-any.whl", hash = "sha256:d103447237a6b57860b406863345bf405a46f374f0882fed37da5f36807653df"},
+]
+
+[[package]]
 name = "six"
 version = "1.16.0"
 description = "Python 2 and 3 compatibility utilities"
@@ -293,4 +304,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "c645f670954404eb6b212a665588c5ec0e05ce41e114a01418ca57a09ccd5154"
+content-hash = "d3aa25ee5de6b0b493a9680d3be89df74d5f74e5ec1f7edddd7ef0eb8df2c987"
