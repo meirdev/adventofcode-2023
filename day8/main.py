@@ -33,9 +33,7 @@ def parse_input(input: str) -> Input:
         Instruction.LEFT if i == "L" else Instruction.RIGHT for i in match.group(0)
     ]
 
-    nodes = re.findall(r"(\w+) = \((\w+), (\w+)\)", input)
-
-    network = {i[0]: Node(*i) for i in nodes}
+    network = {i[0]: Node(*i) for i in re.findall(r"(\w+) = \((\w+), (\w+)\)", input)}
 
     return Input(instructions, network)
 
