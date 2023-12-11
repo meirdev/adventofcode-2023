@@ -31,9 +31,9 @@ def expend_galaxies(cosmos: Cosmos, expansion: int) -> list[Position]:
     galaxies, expansion = cosmos.galaxies[:], expansion - 1
 
     for idx, dim in enumerate((rows, columns)):
-        for y, e in zip(dim, itertools.count(0, expansion)):
+        for i, e in zip(dim, itertools.count(0, expansion)):
             for galaxy in galaxies:
-                if galaxy[idx] > y + e:
+                if galaxy[idx] > i + e:
                     galaxy[idx] += expansion
 
     return galaxies
