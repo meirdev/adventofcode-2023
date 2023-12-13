@@ -12,7 +12,7 @@ Pattern: TypeAlias = list[list[Char]]
 
 
 class Line(enum.IntEnum):
-    HORIZONTAL = 0
+    HORIZONTAL = 100
     VERTICAL = 1
 
 
@@ -85,16 +85,13 @@ def solution(
 ) -> int:
     patterns = parse_input(input)
 
-    sum_ = 0
-
-    for pattern in patterns:
-        for line, pattern_ in zip(Line, (pattern, rotate_pattern(pattern))):
-            for pattern_, i, j in function(pattern_):
-                if (idx := find_reflection(pattern_, i, j)) != -1:
-                    sum_ += idx * 100 if line == Line.HORIZONTAL else idx
-                    break
-
-    return sum_
+    return sum(
+        idx * line
+        for pattern in patterns
+        for line, pattern_ in zip(Line, (pattern, rotate_pattern(pattern)))
+        for pattern_, i, j in function(pattern_)
+        if (idx := find_reflection(pattern_, i, j)) != -1
+    )
 
 
 def part1(input: str) -> int:
