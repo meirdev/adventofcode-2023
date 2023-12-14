@@ -1,11 +1,14 @@
 import enum
-from typing import NamedTuple
+from typing import TypeAlias
 
 
-class Rocks(NamedTuple):
-    size: tuple[int, int]
-    rounded: tuple[list[bool], ...]
-    cube: tuple[list[bool], ...]
+class Type(enum.StrEnum):
+    EMPTY = "."
+    ROUNDED = "O"
+    CUBE = "#"
+
+
+Platform: TypeAlias = dict[int, dict[int, Type]]
 
 
 class Direction(enum.IntEnum):
@@ -27,20 +30,16 @@ def get_direction(direction: Direction) -> tuple[int, int]:
             return (0, 1)
 
 
-def parse_input(input: str) -> Rocks:
+def parse_input(input: str) -> Platform:
     rows = input.strip().splitlines()
 
-    return Rocks(
-        size=(len(rows), len(rows[0])),
-        rounded=tuple(list(i == "O" for i in row) for row in rows),
-        cube=tuple(list(i == "#" for i in row) for row in rows),
-    )
+    return {
+        y: {x: Type(col) for x, col in enumerate(row)} for y, row in enumerate(rows)
+    }
 
 
-def tilt_rocks(rocks: Rocks, direction: Direction) -> None:
-    h, w = rocks.size
-
-    rounded, cube = rocks.rounded, rocks.cube
+def tilt_platform(platform: Platform, direction: Direction) -> None:
+    h, w = len(platform), len(platform[0])
 
     y_range = range(h - 1, -1, -1) if direction == Direction.SOUTH else range(h)
     x_range = range(w - 1, -1, -1) if direction == Direction.EAST else range(w)
@@ -49,48 +48,54 @@ def tilt_rocks(rocks: Rocks, direction: Direction) -> None:
 
     for y in y_range:
         for x in x_range:
-            if rounded[y][x]:
+            if platform[y][x] == Type.ROUNDED:
                 x_, y_ = x, y
 
                 while (
-                    0 <= (x_temp := x_ + x_dir) < w
-                    and 0 <= (y_temp := y_ + y_dir) < h
-                    and rounded[y_temp][x_temp] == False
-                    and cube[y_temp][x_temp] == False
+                    platform.get(y_ + y_dir, {}).get(x_ + x_dir, Type.CUBE)
+                    == Type.EMPTY
                 ):
                     x_ += x_dir
                     y_ += y_dir
 
                 if x != x_ or y != y_:
-                    rounded[y][x] = False
-                    rounded[y_][x_] = True
+                    platform[y][x] = Type.EMPTY
+                    platform[y_][x_] = Type.ROUNDED
 
 
-def calculate_total_load(rocks: Rocks) -> int:
-    h, w = rocks.size
+def calculate_total_load(platform: Platform) -> int:
+    h = len(platform)
 
-    return sum(h - y for y in range(h) for x in range(w) if rocks.rounded[y][x])
+    return sum(
+        h - y for y in platform for x in platform[y] if platform[y][x] == Type.ROUNDED
+    )
+
+
+def print_platform(platform: Platform) -> None:
+    for row in platform.values():
+        print("".join(row.values()))
+    print()
 
 
 def part1(input: str) -> int:
-    rocks = parse_input(input)
+    platform = parse_input(input)
 
-    tilt_rocks(rocks, Direction.NORTH)
+    tilt_platform(platform, Direction.NORTH)
 
-    return calculate_total_load(rocks)
+    return calculate_total_load(platform)
 
 
 def part2(input: str) -> int:
-    rocks = parse_input(input)
+    platform = parse_input(input)
 
-    cache: dict[tuple[tuple[bool, ...], ...], int] = {}
+    cache: dict[tuple[tuple[int, int, Type], ...], int] = {}
 
     i = 1_000_000_000
     while 0 < i:
         for dir in Direction:
-            tilt_rocks(rocks, dir)
+            tilt_platform(platform, dir)
 
-        key = tuple(tuple(row) for row in rocks.rounded)
+        key = tuple((y, x, platform[y][x]) for y in platform for x in platform[y])
         if key in cache:
             i %= cache[key] - i
         else:
@@ -98,7 +103,7 @@ def part2(input: str) -> int:
 
         i -= 1
 
-    return calculate_total_load(rocks)
+    return calculate_total_load(platform)
 
 
 def main() -> None:
