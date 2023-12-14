@@ -88,14 +88,14 @@ def part1(input: str) -> int:
 def part2(input: str) -> int:
     platform = parse_input(input)
 
-    cache: dict[tuple[tuple[int, int, Type], ...], int] = {}
+    cache: dict[tuple[Type, ...], int] = {}
 
     i = 1_000_000_000
     while 0 < i:
         for dir in Direction:
             tilt_platform(platform, dir)
 
-        key = tuple((y, x, platform[y][x]) for y in platform for x in platform[y])
+        key = tuple(platform[y][x] for y in platform for x in platform[y])
         if key in cache:
             i %= cache[key] - i
         else:
