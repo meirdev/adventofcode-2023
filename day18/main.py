@@ -37,8 +37,7 @@ def solution(input: str, func: Callable[[DigPlan], Iterator[Dig]]) -> int:
 
 def part1(input: str) -> int:
     def values(dig_plan: DigPlan) -> Iterator[Dig]:
-        for direction, meters, _ in dig_plan:
-            yield direction, int(meters)
+        return ((direction, int(meters)) for direction, meters, _ in dig_plan)
 
     return solution(input, values)
 
@@ -46,8 +45,9 @@ def part1(input: str) -> int:
 def part2(input: str) -> int:
     def values(dig_plan: DigPlan) -> Iterator[Dig]:
         directions = ["R", "D", "L", "U"]
-        for _, _, hex in dig_plan:
-            yield directions[int(hex[-1])], int(hex[:-1], base=16)
+        return (
+            (directions[int(hex[-1])], int(hex[:-1], base=16)) for _, _, hex in dig_plan
+        )
 
     return solution(input, values)
 
