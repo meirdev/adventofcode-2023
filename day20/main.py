@@ -50,8 +50,8 @@ def parse_input(input: str) -> dict[str, Module]:
         all_modules.add(name)
         all_modules.update(destinations)
 
-    for module in all_modules - set(modules):
-        modules[module] = Module(module, ModuleType.EMPTY)
+    for module_name in all_modules - set(modules):
+        modules[module_name] = Module(module_name, ModuleType.EMPTY)
 
     for module in modules.values():
         for destination in module.destinations:
@@ -64,16 +64,14 @@ def solution(input: str, part: int) -> int:
     modules = parse_input(input)
 
     # part 1
-    counter = {Pulse.LOW: 0, Pulse.HIGH: 0}
-    i = 0
+    counter, i = {Pulse.LOW: 0, Pulse.HIGH: 0}, 0
 
     if part == 2:
         parent = next(iter(modules["rx"].inputs))
-        listen = {n: None for n in modules[parent].inputs}
-        condition = lambda: None in listen.values()
+        listen = {n: 0 for n in modules[parent].inputs}
+        condition = lambda: 0 in listen.values()
     else:
-        parent = None
-        listen = {}
+        parent, listen = None, {}
         condition = lambda: i < 1000
 
     button_presses = 0  # part2
@@ -104,7 +102,7 @@ def solution(input: str, part: int) -> int:
                 # part2
                 if name == parent:
                     for k in filter(
-                        lambda i: (i, listen[i], pulse) == (source, None, Pulse.HIGH),
+                        lambda i: (i, listen[i], pulse) == (source, 0, Pulse.HIGH),
                         listen,
                     ):
                         listen[k] = button_presses
