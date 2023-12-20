@@ -5,7 +5,7 @@ import math
 from typing import Deque
 
 
-class Pulse(enum.IntEnum):
+class Pulse(enum.Flag):
     LOW = 0
     HIGH = 1
 
@@ -23,7 +23,7 @@ class Module:
     type: ModuleType
     destinations: list[str] = dataclasses.field(default_factory=list)
     state: bool = False
-    inputs: dict[str, bool] = dataclasses.field(default_factory=dict)
+    inputs: dict[str, Pulse] = dataclasses.field(default_factory=dict)
 
 
 def parse_input(input: str) -> dict[str, Module]:
@@ -55,7 +55,7 @@ def parse_input(input: str) -> dict[str, Module]:
 
     for module in modules.values():
         for destination in module.destinations:
-            modules[destination].inputs[module.name] = False
+            modules[destination].inputs[module.name] = Pulse.LOW
 
     return modules
 
