@@ -11,6 +11,7 @@ python-ranges = "^1.2.2"
 matplotlib = "^3.8.2"
 shapely = "^2.0.2"
 z3-solver = "^4.12.4.0"
+networkx = {extras = ["default"], version = "^3.2.1"}
 
 
 [tool.poetry.group.dev.dependencies]
